@@ -1,0 +1,9 @@
+firstName,lastName,telephone,password,subscribeNewsletter
+Shashikant,Bodke,1234567890,Test@123,Yes
+Megha,Bodke,1234567890,Test@1234,No
+Sachin,Avhad,1234567890,Test@12345,Yes
+QAOpecartTeam,Test,1234567890,Test@1234,Yes
+UATOpecartTeam,Test,1234567890,Test@1234,Yes
+SITOpecartTeam,Test,1234567890,Test@1234,Yes
+DevOpecartTeam,Test,1234567890,Test@1234,Yes
+ProdOpecartTeam,Test,1234567890,Test@1234,Yes
