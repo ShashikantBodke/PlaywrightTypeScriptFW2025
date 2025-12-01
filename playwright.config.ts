@@ -37,17 +37,17 @@ export default defineConfig({
   },
   /* Configure projects for major browsers */
   projects: [
-    {
-      name: 'Microsoft Edge',
-      use: {
-        channel: 'msedge',
-        viewport: null,
-        launchOptions: {
-          args: ['--start-maximized'],
-          ignoreDefaultArgs: ['--window-size=1280,720']
-        }
-      }
-    },
+    // {
+    //   name: 'Microsoft Edge',
+    //   use: {
+    //     channel: 'msedge',
+    //     viewport: null,
+    //     launchOptions: {
+    //       args: ['--start-maximized'],
+    //       ignoreDefaultArgs: ['--window-size=1280,720']
+    //     }
+    //   }
+    // },
     {
       name: 'Google Chrome',
       use: {
@@ -59,39 +59,39 @@ export default defineConfig({
         }
       }
     },
-    {
-      name: 'Chromium',
-      use: {
-        browserName: 'chromium',
-        viewport: { width: 1920, height: 1080 },
-        launchOptions: {
-          args: [],
-          ignoreDefaultArgs: ['--window-size=1280,720']
-        }
-      }
-    },
-    {
-      name: 'Firefox',
-      use: {
-        browserName: 'firefox',
-        viewport: { width: 1920, height: 1080 },
-        launchOptions: {
-          args: [],
-          ignoreDefaultArgs: ['--window-size=1280,720']
-        }
-      }
-    },
-    {
-      name: 'WebKit',
-      use: {
-        browserName: 'webkit',
-        viewport: { width: 1920, height: 1080 },
-        launchOptions: {
-          args: [],
-          ignoreDefaultArgs: ['--window-size=1280,720']
-        }
-      }
-    },
+    // {
+    //   name: 'Chromium',
+    //   use: {
+    //     browserName: 'chromium',
+    //     viewport: { width: 1920, height: 1080 },
+    //     launchOptions: {
+    //       args: [],
+    //       ignoreDefaultArgs: ['--window-size=1280,720']
+    //     }
+    //   }
+    // },
+    // {
+    //   name: 'Firefox',
+    //   use: {
+    //     browserName: 'firefox',
+    //     viewport: { width: 1920, height: 1080 },
+    //     launchOptions: {
+    //       args: [],
+    //       ignoreDefaultArgs: ['--window-size=1280,720']
+    //     }
+    //   }
+    // },
+    // {
+    //   name: 'WebKit',
+    //   use: {
+    //     browserName: 'webkit',
+    //     viewport: { width: 1920, height: 1080 },
+    //     launchOptions: {
+    //       args: [],
+    //       ignoreDefaultArgs: ['--window-size=1280,720']
+    //     }
+    //  }
+   // },
    ]
 
 

@@ -22,7 +22,16 @@ let registerationData:RegData[]  = parse(fileContent, {
 });
 
 for (let user of registerationData) {
-    test(`verify user is able to register ${user.firstName}`, async ({ page, baseURL }) => {
+    test(`verify user is able to register ${user.firstName}`,
+        {
+            tag:['@sanity','@critical','@regression'],
+            annotation:[
+                {type:'epic',description:'EPIC 100-Design login page for open cart app'},
+                {type:'feature',description:'Login Page Feature'},
+                {type:'story',description:'US 50 - User can do login to app'}              
+            ]
+        }
+        , async ({ page, baseURL }) => {
     
         let loginPage = new LoginPage(page);
         await loginPage.goToLoginPage(baseURL);

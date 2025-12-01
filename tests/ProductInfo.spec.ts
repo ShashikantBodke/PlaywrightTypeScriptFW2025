@@ -6,6 +6,8 @@ import { ResultsPage } from '../pages/ResultsPage';
 import { ProductInfoPage } from '../pages/ProductInfoPage';
 
 
+//tagging : npx playwright test tests/ProductInfo.spec.ts --grep '@sanity'
+
 let search = [
     {searchkey: 'macbook', productname: 'MacBook Pro', imagecount: 4,brand:'Apple', productcode:'Product 18',rewardpoints:'800',availability:'Out Of Stock',price:'$2,000.00',extaxprice:'$2,000.00'},
     {searchkey: 'macbook', productname: 'MacBook Air', imagecount: 4,brand:'Apple', productcode:'Product 17',rewardpoints:'700',availability:'Out Of Stock',price:'$1,202.00',extaxprice:'$1,000.00'},
@@ -14,7 +16,7 @@ let search = [
 
 for (let product of search) {
 
-    test(`verify product Header ${product.productname}`, async ({ homePage }) => {
+    test(`verify product Header ${product.productname}`,{tag:['@product','@sanity','@regression']}, async ({ homePage }) => {
 
         // let loginPage = new LoginPage(page);
         // await loginPage.goToLoginPage();
@@ -26,7 +28,7 @@ for (let product of search) {
 
     });
 
-    test(`verify product Images ${product.productname} : ${product.imagecount}`, async ({ homePage }) => {
+    test(`verify product Images ${product.productname} : ${product.imagecount}`,{tag:['@product','@sanity']}, async ({ homePage }) => {
 
         // let loginPage = new LoginPage(page);
         
