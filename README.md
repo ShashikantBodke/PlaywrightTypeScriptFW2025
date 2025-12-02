@@ -3,6 +3,8 @@
 Welcome to the **Nov2025PlaywrightFramework** automation project. Below you can find the latest test results and HTML reports.
 
 ---
+# Dashboard Page 🏠
+[![Playwright Tests](https://github.com/ShashikantBodke/PlaywrightTypeScriptFW2025/actions/workflows/manual-run.yml/badge.svg)])(https://shashikantbodke.github.io/PlaywrightTypeScriptFW2025/)
 
 ## Workflow Status
 
