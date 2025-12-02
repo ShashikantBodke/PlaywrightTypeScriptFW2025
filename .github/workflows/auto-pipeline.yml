@@ -149,7 +149,7 @@ jobs:
       - name: 🏷️ Add Allure environment info
         if: always()
         run: |
-          echo "Environment=DEV" > allure-results/environment.properties
+          echo "Environment=DEV" >> allure-results/environment.properties
           echo "Browser=Google Chrome" >> allure-results/environment.properties
           echo "Config=playwright.config.dev.ts" >> allure-results/environment.properties
           # Add parent suite label to each result file
@@ -246,7 +246,7 @@ jobs:
       - name: 🏷️ Add Allure environment info
         if: always()
         run: |
-          echo "Environment=SIT" > allure-results/environment.properties
+          echo "Environment=SIT" >> allure-results/environment.properties
           echo "Browser=Google Chrome" >> allure-results/environment.properties
           echo "Config=playwright.config.sit.ts" >> allure-results/environment.properties
           # Add parent suite label to each result file
@@ -344,7 +344,7 @@ jobs:
       - name: 🏷️ Add Allure environment info
         if: always()
         run: |
-          echo "Environment=STAGE" > allure-results/environment.properties
+          echo "Environment=STAGE" >> allure-results/environment.properties
           echo "Browser=Google Chrome" >> allure-results/environment.properties
           echo "Config=playwright.config.stage.ts" >> allure-results/environment.properties
           # Add parent suite label to each result file
@@ -442,7 +442,7 @@ jobs:
       - name: 🏷️ Add Allure environment info
         if: always()
         run: |
-          echo "Environment=PROD" > allure-results/environment.properties
+          echo "Environment=PROD" >> allure-results/environment.properties
           echo "Browser=Google Chrome" >> allure-results/environment.properties
           echo "Config=playwright.config.prod.ts" >> allure-results/environment.properties
           # Add parent suite label to each result file

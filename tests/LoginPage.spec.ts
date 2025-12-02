@@ -13,7 +13,7 @@ import { LoginPage } from '../pages/LoginPage';
 //tagging - exclude: --grep-invert "@sanity"
 
 //AAA pattern
-test('Verify Valid Login  @login @sanity',async({homePage})=>{
+test('Verify Valid Login @sample  @login @sanity',async({homePage})=>{
     const status=await homePage.isUserLoggedIn();
     expect(status).toBeTruthy();
     await expect(homePage.page).toHaveTitle('My Account');
