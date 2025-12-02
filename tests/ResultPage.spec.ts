@@ -4,7 +4,7 @@ import {test,expect} from '../fixtures/baseFixtures';
 import { ResultsPage } from '../pages/ResultsPage';
 
 
-let searchData =[
+const searchData =[
         {searchkey:'macbook',resultcount:3},
         {searchkey:'samsung',resultcount:2},
         {searchkey:'imac',resultcount:1},
@@ -12,13 +12,13 @@ let searchData =[
        {searchkey:'NokiaDummy',resultcount:0},
 ];
 
-for(let product of searchData){
+for(const product of searchData){
 test(`Verify product search ${product.searchkey}`,async({homePage})=>{
     // let loginpage =new LoginPage(page);
     // await loginpage.goToLoginPage();
     // let homePage:HomePage=await loginpage.doLogin('auto_cm1lnwi@nal.com','Test@123');
   
-    let resultPage:ResultsPage=await homePage.doSearch(product.searchkey);
+    const resultPage:ResultsPage=await homePage.doSearch(product.searchkey);
   //console.log(await resultPage.getSearchReultsCount());
     expect(await resultPage.getSearchReultsCount()).toBe(product.resultcount);
 });

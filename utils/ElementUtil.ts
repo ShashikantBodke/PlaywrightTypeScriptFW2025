@@ -1,4 +1,4 @@
-import { Page, Locator, expect } from "@playwright/test";
+import { Page, Locator } from '@playwright/test';
 
 type flexibleLocator = string | Locator;
 //string means xpath, css,text
@@ -20,7 +20,7 @@ export class ElementUtil {
      * @returns
      */
     private getLocator(locator: flexibleLocator, index?: number): Locator {
-        if (typeof locator === "string") {
+        if (typeof locator === 'string') {
             if (index) {
                 return this.page.locator(locator).nth(index); //css,xpath in single uote
             } else {
@@ -69,7 +69,7 @@ export class ElementUtil {
      */
     async rightClick(locator: flexibleLocator): Promise<void> {
         await this.getLocator(locator).click({
-            button: "right",
+            button: 'right',
             timeout: this.defaultTimeOut,
         });
         console.log(`Right Clicked on element : ${locator}`);
@@ -158,7 +158,7 @@ export class ElementUtil {
      * Get count of multiple elements found
      */
     async getNumberOfCounts(locator: flexibleLocator): Promise<number> {
-        if (typeof locator === "string") {
+        if (typeof locator === 'string') {
             return this.page.locator(locator).count();
         } else {
             return locator.count();
@@ -245,8 +245,8 @@ export class ElementUtil {
         timeout: number = 5000
     ): Promise<boolean> {
         try {
-            await this.getLocator(locator).waitFor({ state: "visible", timeout });
-            console.log(`waited for element to be visible `);
+            await this.getLocator(locator).waitFor({ state: 'visible', timeout });
+            console.log('waited for element to be visible ');
             return true;
         } catch {
             return false;
@@ -261,8 +261,8 @@ export class ElementUtil {
         timeout: number = 5000
     ): Promise<boolean> {
         try {
-            await this.getLocator(locator).waitFor({ state: "attached", timeout });
-            console.log(`waited for element to be visible `);
+            await this.getLocator(locator).waitFor({ state: 'attached', timeout });
+            console.log('waited for element to be visible ');
             return true;
         } catch {
             return false;
@@ -277,8 +277,8 @@ export class ElementUtil {
         timeout: number = 5000
     ): Promise<boolean> {
         try {
-            await this.getLocator(locator).waitFor({ state: "detached", timeout });
-            console.log(`waited for element to be detach `);
+            await this.getLocator(locator).waitFor({ state: 'detached', timeout });
+            console.log('waited for element to be detach ');
             return true;
         } catch {
             return false;
@@ -293,8 +293,8 @@ export class ElementUtil {
         timeout: number = 5000
     ): Promise<boolean> {
         try {
-            await this.getLocator(locator).waitFor({ state: "hidden", timeout });
-            console.log(`element hidden `);
+            await this.getLocator(locator).waitFor({ state: 'hidden', timeout });
+            console.log('element hidden ');
             return true;
         } catch {
             return false;
@@ -305,7 +305,7 @@ export class ElementUtil {
      * wait for page load state
      */
     async waitForPageLoad(
-        state: "load" | "domcontentloaded" | "networkidle" = "load"
+        state: 'load' | 'domcontentloaded' | 'networkidle' = 'load'
     ): Promise<void> {
         await this.page.waitForLoadState(state);
         console.log(`waitd for page load state: ${state}`);
@@ -350,8 +350,8 @@ export class ElementUtil {
         srcLocator: flexibleLocator,
         tgtLocator: flexibleLocator
     ): Promise<void> {
-        let source = this.getLocator(srcLocator);
-        let target = this.getLocator(tgtLocator);
+        const source = this.getLocator(srcLocator);
+        const target = this.getLocator(tgtLocator);
         await source.dragTo(target);
     }
 
@@ -365,6 +365,7 @@ export class ElementUtil {
     //  }
 
     //********************************* Screenshot ***********************************/
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     async getScreenshot(options?:{ path?: string, fullPage?: boolean, type?: string,quality?:number,timeout?:number,clip?:object}) {
         await this.page.screenshot();
     }

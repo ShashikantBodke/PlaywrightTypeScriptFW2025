@@ -1,6 +1,6 @@
-import { Locator, Page } from "@playwright/test";
-import { ElementUtil } from "../utils/ElementUtil";
-import { ProductInfoPage } from "./ProductInfoPage";
+import { Locator, Page } from '@playwright/test';
+import { ElementUtil } from '../utils/ElementUtil';
+import { ProductInfoPage } from './ProductInfoPage';
 
 
 export class ResultsPage {
@@ -15,14 +15,14 @@ export class ResultsPage {
     this.results = page.locator('.product-thumb');
   }
 
-  async getSearchReultsCount(): Promise<Number> {
-    return this.eleUtil.getNumberOfCounts(this.results)
+  async getSearchReultsCount(): Promise<number> {
+    return this.eleUtil.getNumberOfCounts(this.results);
     // return await this.results.count(); //naveen
 
   }
 
   async selectProduct(productName: string): Promise<ProductInfoPage> {
-    console.log("==========Product Name=======" + productName);
+    console.log('==========Product Name=======' + productName);
     await this.eleUtil.click(this.page.getByRole('link', { name: `${productName}` }));
     return new ProductInfoPage(this.page);
   }

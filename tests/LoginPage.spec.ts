@@ -1,5 +1,5 @@
 //import{test,expect} from '@playwright/test';
-import { stat } from 'fs';
+//import { stat } from 'fs';
 import {test, expect} from '../fixtures/baseFixtures';
 import { LoginPage } from '../pages/LoginPage';
 //import { HomePage } from '../pages/HomePage';
@@ -16,15 +16,15 @@ import { LoginPage } from '../pages/LoginPage';
 test('Verify Valid Login  @login @sanity',async({homePage})=>{
     const status=await homePage.isUserLoggedIn();
     expect(status).toBeTruthy();
-    await expect(homePage.page).toHaveTitle('My Account')
+    await expect(homePage.page).toHaveTitle('My Account');
 });
 
 test.skip('Verify in-valid Login',async({page,baseURL})=>{
-    let loginpage =new LoginPage(page);
+    const loginpage =new LoginPage(page);
     await loginpage.goToLoginPage(baseURL);
     await loginpage.doLogin('test@abc','test');
     const errorMsg=await loginpage.getInvalidLoginMessage();
-    expect(errorMsg).toContain('Warning: No match for E-Mail Address and/or Password.')
+    expect(errorMsg).toContain('Warning: No match for E-Mail Address and/or Password.');
 });
 
 
