@@ -13,16 +13,25 @@ export default defineConfig({
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: [
     ['html'],
-    ['allure-playwright']
+    ['list'],
+    ['allure-playwright'],
+    ['playwright-html-reporter', { 
+      testFolder: 'tests',
+      title: 'OPEN CART HTML Report',
+      project: 'Open Cart',
+      release: '9.87.6',
+      testEnvironment: 'DEV',
+      embedAssets: true,
+      embedAttachments: true,
+      outputFolder: 'playwright-html-report',
+      minifyAssets: true,
+      startServer: false,
+    }]
   ],
   
   use: {
-    
-    // baseURL: 'http://localhost:3000',
-
-    
     trace: 'on-first-retry',
-    headless:true,
+    headless:!!process.env.CI,  // false locally, true in CI
     screenshot:'on-first-failure',
     video:'on',
     baseURL:'https://naveenautomationlabs.com/opencart/index.php',
@@ -34,41 +43,71 @@ export default defineConfig({
   },
   /* Configure projects for major browsers */
   projects: [
-    // {
-    //   name: 'chromium',
-    //   use: { ...devices['Desktop Chrome'] },
-    // },
+  {
+    name: 'Google Chrome',
+    use: {
+      channel: 'chrome',
+      viewport: null,
+      launchOptions: {
+        args: ['--start-maximized'],
+        ignoreDefaultArgs: ['--window-size=1280,720']
+      }
+    }
+  },
 
-    {
-      name: 'firefox',
-      use: { ...devices['Desktop Firefox'] },
-    },
+  // {
+  //   name: 'Microsoft Edge',
+  //   use: {
+  //     channel: 'msedge',
+  //     viewport: null,
+  //     launchOptions: {
+  //       args: ['--start-maximized'],
+  //       ignoreDefaultArgs: ['--window-size=1280,720']
+  //     }
+  //   }
+  // },
 
-    // {
-    //   name: 'webkit',
-    //   use: { ...devices['Desktop Safari'] },
-    // },
+  // {
+  //   name: 'Chromium',
+  //   use: {
+  //     browserName: 'chromium',
+  //     viewport: { width: 1920, height: 1080 },
+  //     launchOptions: {
+  //       args: [],
+  //       ignoreDefaultArgs: ['--window-size=1280,720']
+  //     }
+  //   }
+  // },
 
-    /* Test against mobile viewports. */
-    // {
-    //   name: 'Mobile Chrome',
-    //   use: { ...devices['Pixel 5'] },
-    // },
-    // {
-    //   name: 'Mobile Safari',
-    //   use: { ...devices['iPhone 12'] },
-    // },
+  // {
+  //   name: 'Firefox',
+  //   use: {
+  //     browserName: 'firefox',
+  //     viewport: { width: 1920, height: 1080 },       
+  //     launchOptions: {
+  //       args: [],
+  //       ignoreDefaultArgs: ['--window-size=1280,720']
+  //     }
+  //   }
+  // },
 
-    /* Test against branded browsers. */
-    // {
-    //   name: 'Microsoft Edge',
-    //   use: { ...devices['Desktop Edge'], channel: 'msedge' },
-    // },
-    // {
-    //   name: 'Google Chrome',
-    //   use: { ...devices['Desktop Chrome'], channel: 'chrome' },
-    // },
-  ],
+  // {
+  //   name: 'WebKit',
+  //   use: {
+  //     browserName: 'webkit',
+  //     viewport: { width: 1920, height: 1080 },      
+  //     launchOptions: {
+  //       args: [],
+  //       ignoreDefaultArgs: ['--window-size=1280,720']
+  //     }
+  //   }
+  // }
+],
 
-  
+  /* Run your local dev server before starting the tests */
+  // webServer: {
+  //   command: 'npm run start',
+  //   url: 'http://localhost:3000',
+  //   reuseExistingServer: !process.env.CI,
+  // },
 });

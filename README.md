@@ -1,4 +1,4 @@
-# PWFWDemo Automation Reports
+# Playwright Framework Automation Reports
 
 Welcome to the **Nov2025PlaywrightFramework** automation project. Below you can find the latest test results and HTML reports.
 
