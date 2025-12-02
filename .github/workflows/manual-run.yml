@@ -20,7 +20,7 @@ on:
         type: choice
         options:
           - dev
-          - qa
+          - sit
           - stage
           - prod
 
