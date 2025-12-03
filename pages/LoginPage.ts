@@ -33,7 +33,7 @@ export class LoginPage{
 // page actions/methods
 
     async goToLoginPage(baseURL:string | undefined){
-        await this.page.goto(baseURL+'?route=account/login',  {waitUntil:'load'});
+        await this.page.goto(baseURL+'?route=account/login');
     }
 
     async doLogin(email:string, password:string):Promise<HomePage>{
