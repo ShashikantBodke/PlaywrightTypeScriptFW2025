@@ -1,7 +1,7 @@
 // ============================================
 // PLAYWRIGHT AUTO PIPELINE - JENKINSFILE
 // ============================================
-// Flow: lint → dev → qa → stage → prod (automatic)
+// Flow: lint → dev → sit → stage → prod (automatic)
 // Trigger: Push, PR, or manual build
 // Reports: Separate Allure per environment, Playwright HTML, Custom HTML
 // ✅ ESLint static code analysis
@@ -29,11 +29,11 @@ pipeline {
     agent any
 
     tools {
-        nodejs 'NodeJS-20'
+        nodejs 'NodeJS'
     }
 
     environment {
-        NODE_VERSION = '20'
+        NODE_VERSION = '22.14.0'
         CI = 'true'
         PLAYWRIGHT_BROWSERS_PATH = "${WORKSPACE}/.cache/ms-playwright"
         SLACK_WEBHOOK_URL = credentials('slack-webhook-token')
@@ -181,9 +181,9 @@ pipeline {
         }
 
         // ============================================
-        // QA Environment Tests
+        // SIT Environment Tests
         // ============================================
-        stage('🔍 QA Tests') {
+        stage('🔍 SIT Tests') {
             steps {
                 echo '============================================'
                 echo '🧹 Cleaning previous results...'
@@ -191,11 +191,11 @@ pipeline {
                 sh 'rm -rf allure-results playwright-report playwright-html-report test-results'
 
                 echo '============================================'
-                echo '🧪 Running QA tests...'
+                echo '🧪 Running SIT tests...'
                 echo '============================================'
                 script {
-                    env.QA_TEST_STATUS = sh(
-                        script: 'npx playwright test --grep "@login" --config=playwright.config.qa.ts',
+                    env.ST_TEST_STATUS = sh(
+                        script: 'npx playwright test --grep "@login" --config=playwright.config.sit.ts',
                         returnStatus: true
                     ) == 0 ? 'success' : 'failure'
                 }
@@ -205,29 +205,29 @@ pipeline {
                 echo '============================================'
                 sh '''
                     mkdir -p allure-results
-                    echo "Environment=QA" > allure-results/environment.properties
+                    echo "Environment=SIT" > allure-results/environment.properties
                     echo "Browser=Google Chrome" >> allure-results/environment.properties
-                    echo "Config=playwright.config.qa.ts" >> allure-results/environment.properties
+                    echo "Config=playwright.config.sit.ts" >> allure-results/environment.properties
                 '''
             }
             post {
                 always {
-                    // Copy and generate QA Allure Report
+                    // Copy and generate SIT Allure Report
                     sh '''
-                        mkdir -p allure-results-qa
-                        cp -r allure-results/* allure-results-qa/ 2>/dev/null || true
-                        npx allure generate allure-results-qa --clean -o allure-report-qa || true
+                        mkdir -p allure-results-sit
+                        cp -r allure-results/* allure-results-sit/ 2>/dev/null || true
+                        npx allure generate allure-results-sit --clean -o allure-report-sit || true
                     '''
 
-                    // Publish QA Allure HTML Report
+                    // Publish sit Allure HTML Report
                     publishHTML(target: [
                         allowMissing: true,
                         alwaysLinkToLastBuild: true,
                         keepAll: true,
-                        reportDir: 'allure-report-qa',
+                        reportDir: 'allure-report-sit',
                         reportFiles: 'index.html',
-                        reportName: 'QA Allure Report',
-                        reportTitles: 'QA Allure Report'
+                        reportName: 'SIT Allure Report',
+                        reportTitles: 'SIT Allure Report'
                     ])
 
                     publishHTML(target: [
@@ -236,8 +236,8 @@ pipeline {
                         keepAll: true,
                         reportDir: 'playwright-report',
                         reportFiles: 'index.html',
-                        reportName: 'QA Playwright Report',
-                        reportTitles: 'QA Playwright Report'
+                        reportName: 'SIT Playwright Report',
+                        reportTitles: 'SIT Playwright Report'
                     ])
 
                     publishHTML(target: [
@@ -246,11 +246,11 @@ pipeline {
                         keepAll: true,
                         reportDir: 'playwright-html-report',
                         reportFiles: 'index.html',
-                        reportName: 'QA HTML Report',
-                        reportTitles: 'QA Custom HTML Report'
+                        reportName: 'SIT HTML Report',
+                        reportTitles: 'SIT Custom HTML Report'
                     ])
 
-                    archiveArtifacts artifacts: 'allure-results-qa/**/*', allowEmptyArchive: true
+                    archiveArtifacts artifacts: 'allure-results-sit/**/*', allowEmptyArchive: true
                     archiveArtifacts artifacts: 'test-results/**/*', allowEmptyArchive: true
                 }
             }
@@ -423,12 +423,12 @@ pipeline {
                     
                     # Copy all environment results
                     cp -r allure-results-dev/* allure-results-combined/ 2>/dev/null || true
-                    cp -r allure-results-qa/* allure-results-combined/ 2>/dev/null || true
+                    cp -r allure-results-sit/* allure-results-combined/ 2>/dev/null || true
                     cp -r allure-results-stage/* allure-results-combined/ 2>/dev/null || true
                     cp -r allure-results-prod/* allure-results-combined/ 2>/dev/null || true
                     
                     # Create combined environment.properties
-                    echo "Environment=ALL (DEV, QA, STAGE, PROD)" > allure-results-combined/environment.properties
+                    echo "Environment=ALL (DEV, SIT, STAGE, PROD)" > allure-results-combined/environment.properties
                     echo "Browser=Google Chrome" >> allure-results-combined/environment.properties
                     echo "Pipeline=${JOB_NAME}" >> allure-results-combined/environment.properties
                     echo "Build=${BUILD_NUMBER}" >> allure-results-combined/environment.properties
@@ -460,12 +460,12 @@ pipeline {
 
             script {
                 def devStatus = env.DEV_TEST_STATUS ?: 'unknown'
-                def qaStatus = env.QA_TEST_STATUS ?: 'unknown'
+                def sitStatus = env.SIT_TEST_STATUS ?: 'unknown'
                 def stageStatus = env.STAGE_TEST_STATUS ?: 'unknown'
                 def prodStatus = env.PROD_TEST_STATUS ?: 'unknown'
 
                 def devEmoji = devStatus == 'success' ? '✅' : '❌'
-                def qaEmoji = qaStatus == 'success' ? '✅' : '❌'
+                def sitEmoji = sitStatus == 'success' ? '✅' : '❌'
                 def stageEmoji = stageStatus == 'success' ? '✅' : '❌'
                 def prodEmoji = prodStatus == 'success' ? '✅' : '❌'
 
@@ -474,7 +474,7 @@ pipeline {
 📊 Test Results by Environment:
 ============================================
 ${devEmoji} DEV:   ${devStatus}
-${qaEmoji} QA:    ${qaStatus}
+${sitEmoji} SIT:    ${sitStatus}
 ${stageEmoji} STAGE: ${stageStatus}
 ${prodEmoji} PROD:  ${prodStatus}
 ============================================
@@ -484,11 +484,11 @@ ${prodEmoji} PROD:  ${prodStatus}
                 def statusEmoji = '✅'
                 def statusColor = 'good'
 
-                if (devStatus == 'failure' || qaStatus == 'failure' || stageStatus == 'failure' || prodStatus == 'failure') {
+                if (devStatus == 'failure' || sitStatus == 'failure' || stageStatus == 'failure' || prodStatus == 'failure') {
                     overallStatus = 'FAILURE'
                     statusEmoji = '❌'
                     statusColor = 'danger'
-                } else if (devStatus == 'unknown' || qaStatus == 'unknown' || stageStatus == 'unknown' || prodStatus == 'unknown') {
+                } else if (devStatus == 'unknown' || sitStatus == 'unknown' || stageStatus == 'unknown' || prodStatus == 'unknown') {
                     overallStatus = 'UNSTABLE'
                     statusEmoji = '⚠️'
                     statusColor = 'warning'
@@ -498,7 +498,7 @@ ${prodEmoji} PROD:  ${prodStatus}
                 env.STATUS_EMOJI = statusEmoji
                 env.STATUS_COLOR = statusColor
                 env.DEV_EMOJI = devEmoji
-                env.QA_EMOJI = qaEmoji
+                env.SIT_EMOJI = sitEmoji
                 env.STAGE_EMOJI = stageEmoji
                 env.PROD_EMOJI = prodEmoji
             }
@@ -520,7 +520,7 @@ ${prodEmoji} PROD:  ${prodStatus}
 
 *Test Results:*
 ${env.DEV_EMOJI} DEV: ${env.DEV_TEST_STATUS}
-${env.QA_EMOJI} QA: ${env.QA_TEST_STATUS}
+${env.SIT_EMOJI} SIT: ${env.SIT_TEST_STATUS}
 ${env.STAGE_EMOJI} STAGE: ${env.STAGE_TEST_STATUS}
 ${env.PROD_EMOJI} PROD: ${env.PROD_TEST_STATUS}
 
@@ -589,11 +589,11 @@ ${env.PROD_EMOJI} PROD: ${env.PROD_TEST_STATUS}
                     <td><a href="${env.BUILD_URL}DEV_20HTML_20Report" class="btn btn-orange">HTML</a></td>
                 </tr>
                 <tr>
-                    <td>🔍 QA</td>
-                    <td class="success">${env.QA_TEST_STATUS}</td>
-                    <td><a href="${env.BUILD_URL}QA_20Allure_20Report" class="btn btn-green">Allure</a></td>
-                    <td><a href="${env.BUILD_URL}QA_20Playwright_20Report" class="btn">Playwright</a></td>
-                    <td><a href="${env.BUILD_URL}QA_20HTML_20Report" class="btn btn-orange">HTML</a></td>
+                    <td>🔍 SIT</td>
+                    <td class="success">${env.SIT_TEST_STATUS}</td>
+                    <td><a href="${env.BUILD_URL}SIT_20Allure_20Report" class="btn btn-green">Allure</a></td>
+                    <td><a href="${env.BUILD_URL}SIT_20Playwright_20Report" class="btn">Playwright</a></td>
+                    <td><a href="${env.BUILD_URL}SIT_20HTML_20Report" class="btn btn-orange">HTML</a></td>
                 </tr>
                 <tr>
                     <td>🎯 STAGE</td>
@@ -621,25 +621,25 @@ ${env.PROD_EMOJI} PROD: ${env.PROD_TEST_STATUS}
 
             <div class="section-title">📁 All Reports</div>
             <table class="status-table">
-                <tr><th>Report Type</th><th>DEV</th><th>QA</th><th>STAGE</th><th>PROD</th></tr>
+                <tr><th>Report Type</th><th>DEV</th><th>SIT</th><th>STAGE</th><th>PROD</th></tr>
                 <tr>
                     <td><strong>Allure</strong></td>
                     <td><a href="${env.BUILD_URL}DEV_20Allure_20Report">View</a></td>
-                    <td><a href="${env.BUILD_URL}QA_20Allure_20Report">View</a></td>
+                    <td><a href="${env.BUILD_URL}SIT_20Allure_20Report">View</a></td>
                     <td><a href="${env.BUILD_URL}STAGE_20Allure_20Report">View</a></td>
                     <td><a href="${env.BUILD_URL}PROD_20Allure_20Report">View</a></td>
                 </tr>
                 <tr>
                     <td><strong>Playwright</strong></td>
                     <td><a href="${env.BUILD_URL}DEV_20Playwright_20Report">View</a></td>
-                    <td><a href="${env.BUILD_URL}QA_20Playwright_20Report">View</a></td>
+                    <td><a href="${env.BUILD_URL}SIT_20Playwright_20Report">View</a></td>
                     <td><a href="${env.BUILD_URL}STAGE_20Playwright_20Report">View</a></td>
                     <td><a href="${env.BUILD_URL}PROD_20Playwright_20Report">View</a></td>
                 </tr>
                 <tr>
                     <td><strong>Custom HTML</strong></td>
                     <td><a href="${env.BUILD_URL}DEV_20HTML_20Report">View</a></td>
-                    <td><a href="${env.BUILD_URL}QA_20HTML_20Report">View</a></td>
+                    <td><a href="${env.BUILD_URL}SIT_20HTML_20Report">View</a></td>
                     <td><a href="${env.BUILD_URL}STAGE_20HTML_20Report">View</a></td>
                     <td><a href="${env.BUILD_URL}PROD_20HTML_20Report">View</a></td>
                 </tr>
@@ -675,7 +675,7 @@ ${env.PROD_EMOJI} PROD: ${env.PROD_TEST_STATUS}
 
 *Test Results:*
 ${env.DEV_EMOJI ?: '❓'} DEV: ${env.DEV_TEST_STATUS ?: 'not run'}
-${env.QA_EMOJI ?: '❓'} QA: ${env.QA_TEST_STATUS ?: 'not run'}
+${env.SIT_EMOJI ?: '❓'} SIT: ${env.SIT_TEST_STATUS ?: 'not run'}
 ${env.STAGE_EMOJI ?: '❓'} STAGE: ${env.STAGE_TEST_STATUS ?: 'not run'}
 ${env.PROD_EMOJI ?: '❓'} PROD: ${env.PROD_TEST_STATUS ?: 'not run'}
 
@@ -742,11 +742,11 @@ ${env.PROD_EMOJI ?: '❓'} PROD: ${env.PROD_TEST_STATUS ?: 'not run'}
                     <td><a href="${env.BUILD_URL}DEV_20HTML_20Report" class="btn btn-orange">HTML</a></td>
                 </tr>
                 <tr>
-                    <td>🔍 QA</td>
-                    <td class="${env.QA_TEST_STATUS == 'success' ? 'success' : 'failure'}">${env.QA_TEST_STATUS ?: 'not run'}</td>
-                    <td><a href="${env.BUILD_URL}QA_20Allure_20Report" class="btn btn-green">Allure</a></td>
-                    <td><a href="${env.BUILD_URL}QA_20Playwright_20Report" class="btn">Playwright</a></td>
-                    <td><a href="${env.BUILD_URL}QA_20HTML_20Report" class="btn btn-orange">HTML</a></td>
+                    <td>🔍 SIT</td>
+                    <td class="${env.SIT_TEST_STATUS == 'success' ? 'success' : 'failure'}">${env.SIT_TEST_STATUS ?: 'not run'}</td>
+                    <td><a href="${env.BUILD_URL}SIT_20Allure_20Report" class="btn btn-green">Allure</a></td>
+                    <td><a href="${env.BUILD_URL}SIT_20Playwright_20Report" class="btn">Playwright</a></td>
+                    <td><a href="${env.BUILD_URL}SIT_20HTML_20Report" class="btn btn-orange">HTML</a></td>
                 </tr>
                 <tr>
                     <td>🎯 STAGE</td>
@@ -774,25 +774,25 @@ ${env.PROD_EMOJI ?: '❓'} PROD: ${env.PROD_TEST_STATUS ?: 'not run'}
 
             <div class="section-title">📁 All Reports</div>
             <table class="status-table">
-                <tr><th>Report Type</th><th>DEV</th><th>QA</th><th>STAGE</th><th>PROD</th></tr>
+                <tr><th>Report Type</th><th>DEV</th><th>SIT</th><th>STAGE</th><th>PROD</th></tr>
                 <tr>
                     <td><strong>Allure</strong></td>
                     <td><a href="${env.BUILD_URL}DEV_20Allure_20Report">View</a></td>
-                    <td><a href="${env.BUILD_URL}QA_20Allure_20Report">View</a></td>
+                    <td><a href="${env.BUILD_URL}SIT_20Allure_20Report">View</a></td>
                     <td><a href="${env.BUILD_URL}STAGE_20Allure_20Report">View</a></td>
                     <td><a href="${env.BUILD_URL}PROD_20Allure_20Report">View</a></td>
                 </tr>
                 <tr>
                     <td><strong>Playwright</strong></td>
                     <td><a href="${env.BUILD_URL}DEV_20Playwright_20Report">View</a></td>
-                    <td><a href="${env.BUILD_URL}QA_20Playwright_20Report">View</a></td>
+                    <td><a href="${env.BUILD_URL}SIT_20Playwright_20Report">View</a></td>
                     <td><a href="${env.BUILD_URL}STAGE_20Playwright_20Report">View</a></td>
                     <td><a href="${env.BUILD_URL}PROD_20Playwright_20Report">View</a></td>
                 </tr>
                 <tr>
                     <td><strong>Custom HTML</strong></td>
                     <td><a href="${env.BUILD_URL}DEV_20HTML_20Report">View</a></td>
-                    <td><a href="${env.BUILD_URL}QA_20HTML_20Report">View</a></td>
+                    <td><a href="${env.BUILD_URL}SIT_20HTML_20Report">View</a></td>
                     <td><a href="${env.BUILD_URL}STAGE_20HTML_20Report">View</a></td>
                     <td><a href="${env.BUILD_URL}PROD_20HTML_20Report">View</a></td>
                 </tr>
