@@ -1,3 +1,0 @@
-"DESCRIPTION","DURATION IN MS","NAME","PARENT SUITE","START TIME","STATUS","STOP TIME","SUB SUITE","SUITE","TEST CLASS","TEST METHOD"
-"","2725","Verify Valid Login @sample @login @sanity","Google Chrome","Thu Dec 04 18:47:08 UTC 2025","passed","Thu Dec 04 18:47:11 UTC 2025","","LoginPage.spec.ts","",""
-"","1","Verify in-valid Login","Google Chrome","Thu Dec 04 18:47:12 UTC 2025","skipped","Thu Dec 04 18:47:12 UTC 2025","","LoginPage.spec.ts","",""
