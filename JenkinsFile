@@ -124,7 +124,7 @@ pipeline {
                 bat '''
                     powershell New-Item -ItemType Directory -Path allure-results -Force
                     powershell Set-Content -Path allure-results\\environment.properties -Value "Environment=DEV"
-                    powershell Add-Content -Path allure-results\\environment.properties -Value "Browser=Google Chrome"
+                    powershell Add-Content -Path allure-results\\environment.properties -Value "Browser=Chrome"
                     powershell Add-Content -Path allure-results\\environment.properties -Value "Config=playwright.config.dev.ts"
                 '''
             }
