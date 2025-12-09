@@ -161,9 +161,9 @@ pipeline {
         }
 
         // ============================================
-        // QA Environment Tests
+        // SIT Environment Tests
         // ============================================
-        stage('🔍 QA Tests') {
+        stage('🔍 SIT Tests') {
             steps {
                 echo '============================================'
                 echo '🧹 Cleaning previous results...'
@@ -171,11 +171,11 @@ pipeline {
                 bat 'powershell -NoProfile -Command "Remove-Item -Recurse -Force -ErrorAction SilentlyContinue \\\"allure-results\\\"; Remove-Item -Recurse -Force -ErrorAction SilentlyContinue \\\"playwright-report\\\"; Remove-Item -Recurse -Force -ErrorAction SilentlyContinue \\\"playwright-html-report\\\"; Remove-Item -Recurse -Force -ErrorAction SilentlyContinue \\\"test-results\\\"; Exit 0"'
 
                 echo '============================================'
-                echo '🧪 Running QA tests...'
+                echo '🧪 Running SIT tests...'
                 echo '============================================'
                 script {
-                    env.QA_TEST_STATUS = bat(
-                        script: 'npx playwright test --grep "@login" --config=playwright.config.qa.ts',
+                    env.SIT_TEST_STATUS = bat(
+                        script: 'npx playwright test --grep "@login" --config=playwright.config.sit.ts',
                         returnStatus: true
                     ) == 0 ? 'success' : 'failure'
                 }
@@ -183,22 +183,22 @@ pipeline {
                 echo '============================================'
                 echo '🏷️ Adding Allure environment info...'
                 echo '============================================'
-                bat 'powershell -NoProfile -Command "New-Item -ItemType Directory -Path \\\"allure-results\\\" -Force | Out-Null; Set-Content -Path \\\"allure-results\\environment.properties\\\" -Value \\\"Environment=QA\\\"; Add-Content -Path \\\"allure-results\\environment.properties\\\" -Value \\\"Browser=Google Chrome\\\"; Add-Content -Path \\\"allure-results\\environment.properties\\\" -Value \\\"Config=playwright.config.qa.ts\\\"; Exit 0"'
+                bat 'powershell -NoProfile -Command "New-Item -ItemType Directory -Path \\\"allure-results\\\" -Force | Out-Null; Set-Content -Path \\\"allure-results\\environment.properties\\\" -Value \\\"Environment=SIT\\\"; Add-Content -Path \\\"allure-results\\environment.properties\\\" -Value \\\"Browser=Google Chrome\\\"; Add-Content -Path \\\"allure-results\\environment.properties\\\" -Value \\\"Config=playwright.config.sit.ts\\\"; Exit 0"'
             }
 
             post {
                 always {
-                    bat 'powershell -NoProfile -Command "Remove-Item -Recurse -Force -ErrorAction SilentlyContinue \\\"allure-results-qa\\\"; New-Item -ItemType Directory -Path \\\"allure-results-qa\\\" -Force | Out-Null; Copy-Item -Recurse -Force -ErrorAction SilentlyContinue \\\"allure-results\\*\\\" \\\"allure-results-qa\\\"; Exit 0"'
-                    bat 'npx allure generate allure-results-qa --clean -o allure-report-qa || echo \"allure generate failed or not installed\"'
+                    bat 'powershell -NoProfile -Command "Remove-Item -Recurse -Force -ErrorAction SilentlyContinue \\\"allure-results-sit\\\"; New-Item -ItemType Directory -Path \\\"allure-results-sit\\\" -Force | Out-Null; Copy-Item -Recurse -Force -ErrorAction SilentlyContinue \\\"allure-results\\*\\\" \\\"allure-results-sit\\\"; Exit 0"'
+                    bat 'npx allure generate allure-results-sit --clean -o allure-report-sit || echo \"allure generate failed or not installed\"'
 
                     publishHTML(target: [
                         allowMissing: true,
                         alwaysLinkToLastBuild: true,
                         keepAll: true,
-                        reportDir: 'allure-report-qa',
+                        reportDir: 'allure-report-sit',
                         reportFiles: 'index.html',
-                        reportName: 'QA Allure Report',
-                        reportTitles: 'QA Allure Report'
+                        reportName: 'SIT Allure Report',
+                        reportTitles: 'SIT Allure Report'
                     ])
 
                     publishHTML(target: [
@@ -207,8 +207,8 @@ pipeline {
                         keepAll: true,
                         reportDir: 'playwright-report',
                         reportFiles: 'index.html',
-                        reportName: 'QA Playwright Report',
-                        reportTitles: 'QA Playwright Report'
+                        reportName: 'SIT Playwright Report',
+                        reportTitles: 'SIT Playwright Report'
                     ])
 
                     publishHTML(target: [
@@ -217,11 +217,11 @@ pipeline {
                         keepAll: true,
                         reportDir: 'playwright-html-report',
                         reportFiles: 'index.html',
-                        reportName: 'QA HTML Report',
-                        reportTitles: 'QA Custom HTML Report'
+                        reportName: 'SIT HTML Report',
+                        reportTitles: 'SIT Custom HTML Report'
                     ])
 
-                    archiveArtifacts artifacts: 'allure-results-qa/**/*', allowEmptyArchive: true
+                    archiveArtifacts artifacts: 'allure-results-sit/**/*', allowEmptyArchive: true
                     archiveArtifacts artifacts: 'test-results/**/*', allowEmptyArchive: true
                 }
             }
@@ -376,10 +376,10 @@ pipeline {
                         Remove-Item -Recurse -Force -ErrorAction SilentlyContinue 'allure-results-combined';
                         New-Item -ItemType Directory -Path 'allure-results-combined' -Force | Out-Null;
                         Copy-Item -Recurse -Force -ErrorAction SilentlyContinue 'allure-results-dev\\*' 'allure-results-combined'  -ErrorAction SilentlyContinue;
-                        Copy-Item -Recurse -Force -ErrorAction SilentlyContinue 'allure-results-qa\\*' 'allure-results-combined'  -ErrorAction SilentlyContinue;
+                        Copy-Item -Recurse -Force -ErrorAction SilentlyContinue 'allure-results-sit\\*' 'allure-results-combined'  -ErrorAction SilentlyContinue;
                         Copy-Item -Recurse -Force -ErrorAction SilentlyContinue 'allure-results-stage\\*' 'allure-results-combined'  -ErrorAction SilentlyContinue;
                         Copy-Item -Recurse -Force -ErrorAction SilentlyContinue 'allure-results-prod\\*' 'allure-results-combined'  -ErrorAction SilentlyContinue;
-                        Set-Content -Path 'allure-results-combined\\environment.properties' -Value 'Environment=ALL (DEV, QA, STAGE, PROD)';
+                        Set-Content -Path 'allure-results-combined\\environment.properties' -Value 'Environment=ALL (DEV, SIT, STAGE, PROD)';
                         Add-Content -Path 'allure-results-combined\\environment.properties' -Value 'Browser=Google Chrome';
                         Add-Content -Path 'allure-results-combined\\environment.properties' -Value \"Pipeline=${env.JOB_NAME}\";
                         Add-Content -Path 'allure-results-combined\\environment.properties' -Value \"Build=${env.BUILD_NUMBER}\";
@@ -416,12 +416,12 @@ pipeline {
 
             script {
                 def devStatus = env.DEV_TEST_STATUS ?: 'unknown'
-                def qaStatus = env.QA_TEST_STATUS ?: 'unknown'
+                def sitStatus = env.SIT_TEST_STATUS ?: 'unknown'
                 def stageStatus = env.STAGE_TEST_STATUS ?: 'unknown'
                 def prodStatus = env.PROD_TEST_STATUS ?: 'unknown'
 
                 def devEmoji = devStatus == 'success' ? '✅' : '❌'
-                def qaEmoji = qaStatus == 'success' ? '✅' : '❌'
+                def sitEmoji = sitStatus == 'success' ? '✅' : '❌'
                 def stageEmoji = stageStatus == 'success' ? '✅' : '❌'
                 def prodEmoji = prodStatus == 'success' ? '✅' : '❌'
 
@@ -430,7 +430,7 @@ pipeline {
 📊 Test Results by Environment:
 ============================================
 ${devEmoji} DEV:   ${devStatus}
-${qaEmoji} QA:    ${qaStatus}
+${sitEmoji} SIT:    ${sitStatus}
 ${stageEmoji} STAGE: ${stageStatus}
 ${prodEmoji} PROD:  ${prodStatus}
 ============================================
@@ -440,11 +440,11 @@ ${prodEmoji} PROD:  ${prodStatus}
                 def statusEmoji = '✅'
                 def statusColor = 'good'
 
-                if (devStatus == 'failure' || qaStatus == 'failure' || stageStatus == 'failure' || prodStatus == 'failure') {
+                if (devStatus == 'failure' || sitStatus == 'failure' || stageStatus == 'failure' || prodStatus == 'failure') {
                     overallStatus = 'FAILURE'
                     statusEmoji = '❌'
                     statusColor = 'danger'
-                } else if (devStatus == 'unknown' || qaStatus == 'unknown' || stageStatus == 'unknown' || prodStatus == 'unknown') {
+                } else if (devStatus == 'unknown' || sitStatus == 'unknown' || stageStatus == 'unknown' || prodStatus == 'unknown') {
                     overallStatus = 'UNSTABLE'
                     statusEmoji = '⚠️'
                     statusColor = 'warning'
@@ -454,7 +454,7 @@ ${prodEmoji} PROD:  ${prodStatus}
                 env.STATUS_EMOJI = statusEmoji
                 env.STATUS_COLOR = statusColor
                 env.DEV_EMOJI = devEmoji
-                env.QA_EMOJI = qaEmoji
+                env.SIT_EMOJI = sitEmoji
                 env.STAGE_EMOJI = stageEmoji
                 env.PROD_EMOJI = prodEmoji
             }
@@ -475,7 +475,7 @@ ${prodEmoji} PROD:  ${prodStatus}
 
 *Test Results:*
 ${env.DEV_EMOJI} DEV: ${env.DEV_TEST_STATUS}
-${env.QA_EMOJI} QA: ${env.QA_TEST_STATUS}
+${env.SIT_EMOJI} SIT: ${env.SIT_TEST_STATUS}
 ${env.STAGE_EMOJI} STAGE: ${env.STAGE_TEST_STATUS}
 ${env.PROD_EMOJI} PROD: ${env.PROD_TEST_STATUS}
 
@@ -516,7 +516,7 @@ ${env.PROD_EMOJI} PROD: ${env.PROD_TEST_STATUS}
 
 *Test Results:*
 ${env.DEV_EMOJI ?: '❓'} DEV: ${env.DEV_TEST_STATUS ?: 'not run'}
-${env.QA_EMOJI ?: '❓'} QA: ${env.QA_TEST_STATUS ?: 'not run'}
+${env.SIT_EMOJI ?: '❓'} SIT: ${env.SIT_TEST_STATUS ?: 'not run'}
 ${env.STAGE_EMOJI ?: '❓'} STAGE: ${env.STAGE_TEST_STATUS ?: 'not run'}
 ${env.PROD_EMOJI ?: '❓'} PROD: ${env.PROD_TEST_STATUS ?: 'not run'}
 
