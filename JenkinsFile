@@ -6,11 +6,11 @@ pipeline {
     agent any
 
     tools {
-        nodejs 'NodeJS-20'
+        nodejs 'NodeJS'
     }
 
     environment {
-        NODE_VERSION = '20'
+        NODE_VERSION = '22.14.0'
         CI = 'true'
         PLAYWRIGHT_BROWSERS_PATH = "${WORKSPACE}\\.cache\\ms-playwright"
         SLACK_WEBHOOK_URL = credentials('slack-webhook-token')
