@@ -131,11 +131,11 @@ pipeline {
             post {
                 always {
                     // Copy and generate DEV Allure Report (using PowerShell for copy)
-                    bat '''
+                    bat ''
                         powershell New-Item -ItemType Directory -Path allure-results-dev -Force
                         powershell Copy-Item -Path allure-results\\* -Destination allure-results-dev\\ -Recurse -Force -ErrorAction SilentlyContinue
-                        npx allure generate allure-results-dev --clean -o allure-report-dev || exit 0
-                    '''
+                        ''
+                    bat 'npx allure generate allure-results-dev --clean -o allure-report-dev || exit 0'
 
                     // Publish DEV Allure HTML Report
                     publishHTML(target: [
