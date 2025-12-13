@@ -30,6 +30,10 @@ export default defineConfig({
     screenshot: 'on-first-failure',
     video: 'on',
     baseURL: 'https://naveenautomationlabs.com/opencart/index.php',
+    httpCredentials:{
+      username:'admin',
+      password:'admin'
+    }
   },
   metadata: {
     appUsername: 'auto_cm1lnwi@nal.com',

@@ -22,7 +22,7 @@ test('basic auth test', async ({ request }) => {
 test('basic auth test with credetntials', async ({ request }) => {
 
    const response = await request.get('https://the-internet.herokuapp.com/basic_auth');
-    
+    //auth credentials are declared in playwright config file 
     expect(response.status()).toBe(200);
     const body = await response.text();
     console.log(body);
