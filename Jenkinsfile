@@ -62,7 +62,10 @@ pipeline {
                 echo '============================================'
                 echo '📁 Creating ESLint report directory...'
                 echo '============================================'
-				bat 'md eslint-report'
+				bat '''
+    			REM Check if the directory does NOT exist, then create it.
+    			if not exist eslint-report md eslint-report
+				'''
 				echo '============================================'
                 echo '🔍 Running ESLint...'
                 echo '============================================'
