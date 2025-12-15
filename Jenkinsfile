@@ -1,5 +1,28 @@
 // ============================================
-// PLAYWRIGHT AUTO PIPELINE - JENKINSFILE (Windows-ready)
+// PLAYWRIGHT AUTO PIPELINE - JENKINSFILE
+// ============================================
+// Flow: lint → dev → qa → stage → prod (automatic)
+// Trigger: Push, PR, or manual build
+// Reports: Separate Allure per environment, Playwright HTML, Custom HTML
+// ✅ ESLint static code analysis
+// ✅ Separate Allure reports per environment
+// ✅ Slack notifications for test results
+// ✅ Email notifications with all report links
+// ============================================
+//
+// Required Jenkins Credentials:
+// ------------------------------------
+// slack-token          - Slack Webhook Token (Secret text)
+// ============================================
+//
+// Required Jenkins Plugins:
+// ------------------------------------
+// - NodeJS Plugin
+// - Allure Jenkins Plugin
+// - HTML Publisher Plugin
+// - Slack Notification Plugin
+// - Email Extension Plugin
+// - Pipeline Stage View Plugin
 // ============================================
 
 pipeline {
@@ -13,7 +36,8 @@ pipeline {
         NODE_VERSION = '22.14.0'
         CI = 'true'
         PLAYWRIGHT_BROWSERS_PATH = "${WORKSPACE}\\.cache\\ms-playwright"
-        EMAIL_RECIPIENTS = 'bodkeshashi12@gmail.com'
+		SLACK_WEBHOOK_URL = credentials('slack-webhook-token')
+		EMAIL_RECIPIENTS = 'bodkeshashi12@gmail.com'
     }
 
     options {
@@ -23,32 +47,36 @@ pipeline {
         disableConcurrentBuilds()
     }
 
+
     stages {
         // ============================================
         // Static Code Analysis (ESLint)
         // ============================================
         stage('🔍 ESLint Analysis') {
             steps {
-                withEnv(["PUPPETEER_SKIP_DOWNLOAD=true"]) {
-                    echo '============================================'
-                    echo '📥 Installing dependencies...'
-                    echo '============================================'
-                    bat 'npm ci'
+                echo '============================================'
+                echo '📥 Installing dependencies...'
+                echo '============================================'
+                bat 'npm ci'
 
-                    echo '============================================'
-                    echo '🔍 Running ESLint and generating report...'
-                    echo '============================================'
-
-                    script {
-                        // Run eslint once and capture exit code
-                        def lintExit = bat(
-                            script: 'npm run lint',
-                            returnStatus: true
-                        )
-                        env.ESLINT_STATUS = (lintExit == 0) ? 'success' : 'failure'
+                echo '============================================'
+                echo '📁 Creating ESLint report directory...'
+                echo '============================================'
+				bat 'md eslint-report'
+				echo '============================================'
+                echo '🔍 Running ESLint...'
+                echo '============================================'
+                script {
+                        
+					def eslintStatus = bat(script: 'npm run lint',returnStatus: true)
+                    env.ESLINT_STATUS = eslintStatus == 0 ? 'success' : 'failure'
                     }
+				echo '============================================'
+                echo '📊 Generating ESLint HTML Report...'
+                echo '============================================'
+                bat 'npm run lint:report || true'
                 }
-            }
+        
 
             post {
                 always {
@@ -65,7 +93,7 @@ pipeline {
 
                     script {
                         if (env.ESLINT_STATUS == 'failure') {
-                            echo '⚠️ ESLint found issues – review the report'
+                            echo '⚠️ ESLint found issues – check the HTML report'
                         } else {
                             echo '✅ No ESLint issues found'
                         }
@@ -88,32 +116,41 @@ pipeline {
                 echo '============================================'
                 echo '🧹 Cleaning previous results...'
                 echo '============================================'
-                powershell '''
-                    Remove-Item -Recurse -Force -ErrorAction SilentlyContinue "allure-results-combined"
-                    New-Item -ItemType Directory -Path "allure-results-combined" -Force | Out-Null
-                '''
-
+                // Use 'bat' for Windows Command Prompt commands
+				bat 'rd /s /q allure-results playwright-report playwright-html-report test-results'
                 echo '============================================'
                 echo '🧪 Running DEV tests...'
                 echo '============================================'
                 script {
-                    env.DEV_TEST_STATUS = (bat(
+                    env.DEV_TEST_STATUS = bat(
                         script: 'npx playwright test --grep "@login" --config=playwright.config.dev.ts',
                         returnStatus: true
-                    ) == 0) ? 'success' : 'failure'
+                    ) == 0 ? 'success' : 'failure'
                 }
 
                 echo '============================================'
                 echo '🏷️ Adding Allure environment info (DEV)...'
                 echo '============================================'
-                bat 'powershell -NoProfile -Command "New-Item -ItemType Directory -Path \\"allure-results\\" -Force | Out-Null; Set-Content -Path \\"allure-results\\environment.properties\\" -Value \\"Environment=DEV\\"; Add-Content -Path \\"allure-results\\environment.properties\\" -Value \\"Browser=Google Chrome\\"; Add-Content -Path \\"allure-results\\environment.properties\\" -Value \\"Config=playwright.config.dev.ts\\"; Exit 0"'
+                // Use 'bat' for Windows Command Prompt execution
+				bat '''
+					md allure-results
+					echo Environment=DEV > allure-results\\environment.properties
+					echo Browser=Google Chrome >> allure-results\\environment.properties
+					echo Config=playwright.config.dev.ts >> allure-results\\environment.properties
+					'''
             }
 
             post {
                 always {
                     // copy and generate DEV Allure report (PowerShell copy)
-                    bat 'powershell -NoProfile -Command "Remove-Item -Recurse -Force -ErrorAction SilentlyContinue \\"allure-results-dev\\"; New-Item -ItemType Directory -Path \\"allure-results-dev\\" -Force | Out-Null; Copy-Item -Recurse -Force -ErrorAction SilentlyContinue \\"allure-results\\*\\" \\"allure-results-dev\\"; Exit 0"'
-                    bat 'npx allure generate allure-results-dev --clean -o allure-report-dev || echo \"allure generate failed or not installed\"'
+					bat '''
+						  md allure-results-dev
+						  'cp -r allure-results/* allure-results-dev/ 2>/dev/null || true'
+							xcopy /E /I /Y allure-results\\* allure-results-dev\\
+
+							'npx allure generate allure-results-dev --clean -o allure-report-dev'
+							'npx allure generate' fails (mimics '|| true') exit 0
+'''
 
                     publishHTML(target: [
                         allowMissing: true,
