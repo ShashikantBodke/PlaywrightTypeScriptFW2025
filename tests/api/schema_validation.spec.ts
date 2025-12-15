@@ -2,6 +2,7 @@ import { test, expect } from '@playwright/test';
 import Ajv from 'ajv';
 import fs from 'fs';
 import path from 'path';
+// npm install ajv
 
 
 const TOKEN = 'd0bf1714ac04c10dd2982e009d2dffe694a8e0b53af518cb7370e41e046a72f6';

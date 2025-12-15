@@ -1,6 +1,6 @@
-import { test, expect } from '@playwright/test';
+import { test } from '@playwright/test';
 import { JSONPath } from 'jsonpath-plus';
-
+//npm install jsonpath-plus
 
 const BASE_URL = 'https://fakestoreapi.com/products';
 
