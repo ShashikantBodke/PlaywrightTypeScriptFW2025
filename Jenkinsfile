@@ -13,7 +13,7 @@ pipeline {
         NODE_VERSION = '22.14.0'
         CI = 'true'
         PLAYWRIGHT_BROWSERS_PATH = "${WORKSPACE}\\.cache\\ms-playwright"
-        EMAIL_RECIPIENTS = 'mallammahr05@gmail.com,bodkeshashi12@gmail.com'
+        EMAIL_RECIPIENTS = 'bodkeshashi12@gmail.com'
     }
 
     options {
