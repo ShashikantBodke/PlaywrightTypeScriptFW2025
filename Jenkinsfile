@@ -6,16 +6,16 @@ pipeline {
     agent any
 
     tools {
-        nodejs 'NodeJS-20'
+        nodejs 'NodeJS'
     }
 
     environment {
-        NODE_VERSION = '20'
+        NODE_VERSION = '22.14.0'
         CI = 'true'
         // CRITICAL: Use backslashes for Windows path separator in environment variables
         PLAYWRIGHT_BROWSERS_PATH = "${WORKSPACE}\\.cache\\ms-playwright"
         SLACK_WEBHOOK_URL = credentials('slack-webhook-token')
-        EMAIL_RECIPIENTS = 'naveenautomation20@gmail.com, submit@naveenautomationlabs.com'
+        EMAIL_RECIPIENTS = 'bodkeshashi12@gmail.com'
     }
 
     options {
