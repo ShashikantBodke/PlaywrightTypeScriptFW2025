@@ -1,0 +1,1 @@
+[{"uid":"1d881506e07dc034","name":"Verify Valid Login @sample @login @sanity","time":{"start":1765981762093,"stop":1765981766001,"duration":3908},"status":"failed","severity":"normal"},{"uid":"60f4da0e541eadf7","name":"Verify in-valid Login","time":{"start":1765981766336,"stop":1765981766337,"duration":1},"status":"skipped","severity":"normal"}]
